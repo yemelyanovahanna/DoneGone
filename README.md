@@ -60,3 +60,4 @@ npm run dev
 4. Знову увійти як A.
 5. Запросити B через поле `Invite user by email`.
 6. Створити або відредагувати задачу і вибрати B як Assignee.
+Webhook test Fri Oct  2 00:34:30 EEST 2026
