@@ -14,12 +14,16 @@ async function api(path, options = {}, token = '') {
     }
   });
 
-  if (response.status === 204) return null;
+  if (response.status === 204) {
+    return null;
+  }
 
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.error || 'Request failed');
+    const error = new Error(data.error || 'Request failed');
+    error.status = response.status;
+    throw error;
   }
 
   return data;
@@ -291,8 +295,7 @@ function TaskForm({
 
 export default function App() {
   const [token, setToken] = useState(
-    () =>
-      localStorage.getItem('donegone_token') || ''
+    () => localStorage.getItem('donegone_token') || ''
   );
 
   const [projects, setProjects] = useState([]);
@@ -336,6 +339,9 @@ export default function App() {
     );
 
     setToken(newToken);
+
+    // При успішному вході прибираємо старі помилки.
+    setError('');
   }
 
   function logout() {
@@ -354,6 +360,23 @@ export default function App() {
       done: 0,
       overdue: 0
     });
+
+    setError('');
+  }
+
+  function handleError(err) {
+    // Якщо JWT більше не дійсний,
+    // очищаємо його та повертаємо користувача на Login.
+    if (
+      err.status === 401 ||
+      err.message === 'Invalid token' ||
+      err.message === 'Unauthorized'
+    ) {
+      logout();
+      return;
+    }
+
+    setError(err.message);
   }
 
   async function loadProjects() {
@@ -366,11 +389,15 @@ export default function App() {
 
       setProjects(data);
 
+      // Якщо попередня помилка вже не актуальна —
+      // прибираємо її з інтерфейсу.
+      setError('');
+
       if (!selected && data[0]) {
         setSelected(data[0].id);
       }
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
@@ -384,6 +411,8 @@ export default function App() {
         done: 0,
         overdue: 0
       });
+
+      setError('');
 
       return;
     }
@@ -416,8 +445,12 @@ export default function App() {
       setTasks(taskData);
       setMembers(memberData);
       setStats(statsData);
+
+      // Дані успішно завантажилися,
+      // тому старе повідомлення про помилку видаляємо.
+      setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
@@ -462,12 +495,14 @@ export default function App() {
       setNewProject('');
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
   async function editProject() {
-    if (!project) return;
+    if (!project) {
+      return;
+    }
 
     const newName = window.prompt(
       'Project name:',
@@ -497,8 +532,7 @@ export default function App() {
           method: 'PUT',
           body: JSON.stringify({
             name: newName.trim(),
-            description:
-              newDescription.trim()
+            description: newDescription.trim()
           })
         },
         token
@@ -514,12 +548,14 @@ export default function App() {
 
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
   async function deleteProject() {
-    if (!project) return;
+    if (!project) {
+      return;
+    }
 
     const confirmed = window.confirm(
       `Delete project "${project.name}"?`
@@ -560,7 +596,7 @@ export default function App() {
 
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
@@ -595,18 +631,22 @@ export default function App() {
 
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
   async function deleteTask() {
-    if (!editing) return;
+    if (!editing) {
+      return;
+    }
 
     const confirmed = window.confirm(
       `Delete task "${editing.title}"?`
     );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
     try {
       await api(
@@ -623,7 +663,7 @@ export default function App() {
 
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
@@ -675,7 +715,7 @@ export default function App() {
 
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
@@ -693,8 +733,7 @@ export default function App() {
           method: 'POST',
 
           body: JSON.stringify({
-            email:
-              inviteEmail.trim()
+            email: inviteEmail.trim()
           })
         },
         token
@@ -706,7 +745,7 @@ export default function App() {
 
       setError('');
     } catch (err) {
-      setError(err.message);
+      handleError(err);
     }
   }
 
@@ -996,8 +1035,7 @@ export default function App() {
                             disabled={
                               column ===
                               columns[
-                                columns.length -
-                                  1
+                                columns.length - 1
                               ]
                             }
                           >
