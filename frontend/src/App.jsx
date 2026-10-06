@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-const API = 'http://localhost:3000/api';
-
+const API = '/api';
 const columns = ['To Do', 'In Progress', 'Review', 'Done'];
 
 async function api(path, options = {}, token = '') {
