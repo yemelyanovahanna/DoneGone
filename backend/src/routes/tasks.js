@@ -1,3 +1,4 @@
+const asyncHandler = require('../middleware/asyncHandler');
 const express = require('express');
 const pool = require('../db');
 const auth = require('../middleware/auth');
@@ -17,7 +18,7 @@ async function hasProjectAccess(projectId, userId) {
   return Boolean(result.rows[0]);
 }
 
-router.get('/project/:projectId', async (req, res) => {
+router.get('/project/:projectId', asyncHandler(async (req, res) => {
   if (!(await hasProjectAccess(req.params.projectId, req.user.id))) {
     return res.status(404).json({ error: 'Project not found' });
   }
@@ -30,9 +31,9 @@ router.get('/project/:projectId', async (req, res) => {
     [req.params.projectId]
   );
   res.json(result.rows);
-});
+}));
 
-router.get('/project/:projectId/stats', async (req, res) => {
+router.get('/project/:projectId/stats', asyncHandler(async (req, res) => {
   if (!(await hasProjectAccess(req.params.projectId, req.user.id))) {
     return res.status(404).json({ error: 'Project not found' });
   }
@@ -45,9 +46,9 @@ router.get('/project/:projectId/stats', async (req, res) => {
     [req.params.projectId]
   );
   res.json(result.rows[0]);
-});
+}));
 
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   const {
     project_id, title, description = '', status = 'To Do',
     priority = 'Medium', due_date = null, assignee_id = null
@@ -62,9 +63,9 @@ router.post('/', async (req, res) => {
     [project_id, title, description, status, priority, due_date, assignee_id]
   );
   res.status(201).json(result.rows[0]);
-});
+}));
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', asyncHandler(async (req, res) => {
   const {
     title, description = '', status = 'To Do',
     priority = 'Medium', due_date = null, assignee_id = null
@@ -88,9 +89,9 @@ router.put('/:id', async (req, res) => {
     [title, description, status, priority, due_date, assignee_id, req.params.id]
   );
   res.json(result.rows[0]);
-});
+}));
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', asyncHandler(async (req, res) => {
   const result = await pool.query(
     `DELETE FROM tasks t
      USING projects p
@@ -104,6 +105,6 @@ router.delete('/:id', async (req, res) => {
   );
   if (!result.rows[0]) return res.status(404).json({ error: 'Task not found' });
   res.status(204).end();
-});
+}));
 
 module.exports = router;

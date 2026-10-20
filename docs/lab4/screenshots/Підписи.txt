@@ -1,0 +1,40 @@
+Рис. 25. Перевірка /api/health у Postman та успішна відповідь HTTP 200
+Файл: 25-postman-health.png
+
+Рис. 26. Postman Runner — 87 успішних перевірок без помилок
+Файл: 26-postman-runner-87-tests.png
+
+Рис. 27. Контейнери frontend, backend та PostgreSQL у локальному Docker Compose
+Файл: 27-docker-terminal.png
+
+Рис. 28. Перегляд журналу Jest у терміналі — 4 успішні тести у 2 наборах
+Файл: 28-jest-terminal.png
+
+Рис. 29. Форма входу до вебзастосунку DoneGone
+Файл: 29-donegone-login.png
+
+Рис. 30. Демонстраційна дошка проєкту DoneGone із завданнями
+Файл: 30-donegone-board.png
+
+Рис. 31. Форма створення завдання DoneGone
+Файл: 31-donegone-task-form.png
+
+Рис. 32. Підсумок журналу Newman у терміналі — 30 запитів та 87 перевірок без помилок
+Файл: 32-newman-terminal.png
+
+Рис. 33. Негативні сценарії Postman — очікувані HTTP 401 і 400
+Файл: 33-postman-negative-tests.png
+
+Рис. 34. Перевірки створення й читання завдань та відмови в доступі
+Файл: 34-postman-task-tests.png
+
+Рис. 35. Успішне виконання Jenkins Pipeline з API-тестами Newman
+Файл: 35-jenkins-pipeline-success.png
+
+Рис. 36. JUnit-звіт Jenkins з 87 успішними перевірками REST API
+Файл: 36-jenkins-87-tests.png
+
+Рис. 37. Контрольна помилка Newman та пропуск наступних стадій Jenkins
+Файл: 37-jenkins-failure-gate.png
+
+Рис. 28 і 32 показують збережені журнали реальних повторних запусків тестів. Рис. 35–37 — раніше зафіксовані запуски Jenkins № 5 і № 4. Для рис. 30–31 створено окремі демонстраційні дані.

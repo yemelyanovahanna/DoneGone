@@ -17,9 +17,22 @@ const healthHandler = (req, res) => {
 };
 
 app.get('/health', healthHandler);
+app.get(['/ready', '/api/ready'], async (req, res) => {
+  try {
+    await require('./db').query('SELECT 1 FROM users LIMIT 1');
+    res.json({ status: 'ready', app: 'DoneGone' });
+  } catch (_) {
+    res.status(503).json({ status: 'not-ready', app: 'DoneGone' });
+  }
+});
 app.get('/api/health', healthHandler);
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
+
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+  res.status(503).json({ error: 'Service temporarily unavailable' });
+});
 
 module.exports = app;

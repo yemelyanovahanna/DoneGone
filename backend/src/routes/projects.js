@@ -1,3 +1,4 @@
+const asyncHandler = require('../middleware/asyncHandler');
 const express = require('express');
 const pool = require('../db');
 const auth = require('../middleware/auth');
@@ -17,7 +18,7 @@ async function canAccessProject(projectId, userId) {
   return Boolean(result.rows[0]);
 }
 
-router.get('/', async (req, res) => {
+router.get('/', asyncHandler(async (req, res) => {
   const result = await pool.query(
     `SELECT DISTINCT p.*
      FROM projects p
@@ -27,9 +28,9 @@ router.get('/', async (req, res) => {
     [req.user.id]
   );
   res.json(result.rows);
-});
+}));
 
-router.post('/', async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
   const { name, description = '' } = req.body;
   if (!name) return res.status(400).json({ error: 'Project name is required' });
 
@@ -38,9 +39,9 @@ router.post('/', async (req, res) => {
     [name, description, req.user.id]
   );
   res.status(201).json(result.rows[0]);
-});
+}));
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', asyncHandler(async (req, res) => {
   const { name, description = '' } = req.body;
   const result = await pool.query(
     'UPDATE projects SET name=$1, description=$2 WHERE id=$3 AND owner_id=$4 RETURNING *',
@@ -48,18 +49,18 @@ router.put('/:id', async (req, res) => {
   );
   if (!result.rows[0]) return res.status(403).json({ error: 'Only the owner can edit this project' });
   res.json(result.rows[0]);
-});
+}));
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', asyncHandler(async (req, res) => {
   const result = await pool.query(
     'DELETE FROM projects WHERE id=$1 AND owner_id=$2 RETURNING id',
     [req.params.id, req.user.id]
   );
   if (!result.rows[0]) return res.status(403).json({ error: 'Only the owner can delete this project' });
   res.status(204).end();
-});
+}));
 
-router.get('/:id/members', async (req, res) => {
+router.get('/:id/members', asyncHandler(async (req, res) => {
   if (!(await canAccessProject(req.params.id, req.user.id))) {
     return res.status(404).json({ error: 'Project not found' });
   }
@@ -78,9 +79,9 @@ router.get('/:id/members', async (req, res) => {
     [req.params.id]
   );
   res.json(result.rows);
-});
+}));
 
-router.post('/:id/members', async (req, res) => {
+router.post('/:id/members', asyncHandler(async (req, res) => {
   const { email } = req.body;
   const owner = await pool.query(
     'SELECT id FROM projects WHERE id=$1 AND owner_id=$2',
@@ -99,6 +100,6 @@ router.post('/:id/members', async (req, res) => {
   );
 
   res.status(201).json(user.rows[0]);
-});
+}));
 
 module.exports = router;

@@ -1,3 +1,4 @@
+const asyncHandler = require('../middleware/asyncHandler');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -5,7 +6,7 @@ const pool = require('../db');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/register', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
 
@@ -20,9 +21,9 @@ router.post('/register', async (req, res) => {
     if (error.code === '23505') return res.status(409).json({ error: 'User already exists' });
     res.status(500).json({ error: 'Server error' });
   }
-});
+}));
 
-router.post('/login', async (req, res) => {
+router.post('/login', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
   const user = result.rows[0];
@@ -33,6 +34,6 @@ router.post('/login', async (req, res) => {
 
   const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
   res.json({ token });
-});
+}));
 
 module.exports = router;

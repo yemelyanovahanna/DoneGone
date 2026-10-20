@@ -1,0 +1,963 @@
+{
+  "info": {
+    "name": "DoneGone Stage 3 REST API",
+    "description": "Етап 3 за ЛР1: перевірка REST API, позитивні та помилкові запити, Newman і Jenkins. Кожен запуск створює унікальних тестових користувачів; проєкт і завдання видаляються наприкінці успішного запуску.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8081"
+    },
+    {
+      "key": "invalid_token",
+      "value": "not-a-valid-jwt"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.info.requestName === 'Health') {",
+          "  const id=pm.variables.replaceIn('{{$guid}}');",
+          "  pm.collectionVariables.set('email','newman-'+id+'@example.test');",
+          "  pm.collectionVariables.set('other_email','outsider-'+id+'@example.test');",
+          "  pm.collectionVariables.set('password','Newman!'+id);",
+          "  pm.collectionVariables.set('project_name','Newman project '+id);",
+          "  ['token','other_token','project_id','task_id'].forEach(k=>pm.collectionVariables.unset(k));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('DoneGone is healthy', () => pm.expect(pm.response.json()).to.deep.eql({status:'ok',app:'DoneGone'}));",
+              "pm.test('Configured health expectation', () => pm.expect(pm.response.code).to.eql(Number(pm.environment.get('expected_health_status') || 200)));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Database readiness",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/ready"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Database schema ready', () => pm.expect(pm.response.json().status).to.eql('ready'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Register owner",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{email}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "const registeredUser=pm.response.json(); pm.test('Registered email',()=>pm.expect(registeredUser.email).to.eql(pm.collectionVariables.get('email'))); pm.collectionVariables.set('user_id',registeredUser.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject duplicate registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{email}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"User already exists\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject incomplete registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{email}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Email and password are required\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject incorrect password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{email}}\", \"password\": \"incorrect-test-password\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Invalid credentials\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login owner",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{email}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "const token=pm.response.json().token; pm.test('JWT returned',()=>pm.expect(token).to.be.a('string').and.not.empty); pm.collectionVariables.set('token',token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject unauthenticated projects",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/projects"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Unauthorized\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject invalid token",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{invalid_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Invalid token\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject empty project",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"description\": \"Missing name\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Project name is required\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create project",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"{{project_name}}\", \"description\": \"API stage 3\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "const d=pm.response.json();pm.test('Project owner',()=>pm.expect(d.owner_id).to.eql(Number(pm.collectionVariables.get('user_id')))); pm.collectionVariables.set('project_id',d.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get projects",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Created project is listed',()=>pm.expect(pm.response.json().some(p=>p.id===Number(pm.collectionVariables.get('project_id')))).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Edit project",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects/{{project_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"{{project_name}} updated\", \"description\": \"Edited by API test\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Project updated',()=>pm.expect(pm.response.json().description).to.eql('Edited by API test'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify edited project",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Saved project update',()=>pm.expect(pm.response.json().find(p=>p.id===Number(pm.collectionVariables.get('project_id'))).name).to.eql(pm.collectionVariables.get('project_name')+' updated'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Register outsider",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{other_email}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login outsider",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"{{other_email}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.collectionVariables.set('other_token',pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject project edit by outsider",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{other_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects/{{project_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Forbidden edit\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', () => pm.response.to.have.status(403));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Only the owner can edit this project\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject task without title",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"project_id\": \"{{project_id}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"project_id and title are required\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject unknown project",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/project/2147483647"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Project not found\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create task",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"project_id\": \"{{project_id}}\", \"title\": \"Task created by Newman\", \"description\": \"Initial description\", \"status\": \"To Do\", \"priority\": \"High\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "const d=pm.response.json(); pm.test('Task starts in To Do',()=>pm.expect(d.status).to.eql('To Do')); pm.collectionVariables.set('task_id',d.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get project tasks",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/project/{{project_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Created task is listed',()=>pm.expect(pm.response.json().some(t=>t.id===Number(pm.collectionVariables.get('task_id')))).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject task access by outsider",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{other_token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/project/{{project_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Project not found\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject unauthenticated task update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/{{task_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\": \"Unauthorized\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Error message', () => pm.expect(pm.response.json().error).to.eql(\"Unauthorized\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Edit task and move to Done",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/{{task_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\": \"Task updated by Newman\", \"description\": \"Updated description\", \"status\": \"Done\", \"priority\": \"Low\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Task fields updated',()=>{const d=pm.response.json();pm.expect(d.title).to.eql('Task updated by Newman');pm.expect(d.status).to.eql('Done');pm.expect(d.priority).to.eql('Low');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify saved task update",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/project/{{project_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Task update persisted',()=>{const d=pm.response.json().find(t=>t.id===Number(pm.collectionVariables.get('task_id')));pm.expect(d.status).to.eql('Done');pm.expect(d.description).to.eql('Updated description');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Project task statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/project/{{project_id}}/stats"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Completed task counted',()=>pm.expect(pm.response.json()).to.deep.eql({active:0,done:1,overdue:0}));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete task",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/{{task_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));",
+              "pm.test('Empty response body',()=>pm.expect(pm.response.text()).to.eql(''));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify task deleted",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/tasks/project/{{project_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Task list is empty',()=>pm.expect(pm.response.json()).to.deep.eql([]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete project",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects/{{project_id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));",
+              "pm.test('Empty response body',()=>pm.expect(pm.response.text()).to.eql(''));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify project deleted",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": "{{base_url}}/api/projects"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('JSON response', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+              "pm.test('Deleted project absent',()=>pm.expect(pm.response.json().some(p=>p.id===Number(pm.collectionVariables.get('project_id')))).to.eql(false));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

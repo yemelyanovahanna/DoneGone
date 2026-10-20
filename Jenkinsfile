@@ -9,6 +9,17 @@ pipeline {
         FRONTEND_IMAGE = 'donegone-frontend'
     }
 
+    options {
+        skipDefaultCheckout(true)
+        disableConcurrentBuilds()
+        timeout(time: 20, unit: 'MINUTES')
+    }
+
+    parameters {
+        booleanParam(name: 'PUBLISH_IMAGES', defaultValue: true, description: 'Publish tested images to GHCR')
+        booleanParam(name: 'VERIFY_FAILURE_GATE', defaultValue: false, description: 'Demonstrate a deliberately failing API assertion')
+    }
+
     stages {
 
         stage('Checkout') {
@@ -36,6 +47,10 @@ pipeline {
                     }
                 }
             }
+        }
+
+        stage('Install Newman') {
+            steps { sh 'npm ci' }
         }
 
         stage('Lint') {
@@ -81,7 +96,33 @@ pipeline {
             }
         }
 
+        stage('API Tests with Newman') {
+            steps {
+                withEnv([
+                    "BACKEND_IMAGE_REF=donegone-backend:${BUILD_NUMBER}",
+                    "FRONTEND_IMAGE_REF=donegone-frontend:${BUILD_NUMBER}",
+                    "EXPECT_HEALTH_STATUS=${params.VERIFY_FAILURE_GATE ? '201' : '200'}"
+                ]) {
+                    sh 'bash scripts/ci-api.sh'
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'reports/newman.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'reports/summary.json,reports/newman.xml,reports/compose.log', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('API Gate Passed') {
+            steps {
+                sh 'echo "API tests passed; subsequent stages are allowed" > reports/gate-passed.txt'
+                archiveArtifacts artifacts: 'reports/gate-passed.txt'
+            }
+        }
+
         stage('Push Docker Images') {
+            when { expression { params.PUBLISH_IMAGES } }
             steps {
 
                 withCredentials([
@@ -135,7 +176,7 @@ pipeline {
 
     post {
         success {
-            echo 'DoneGone CI and Docker publish completed successfully.'
+            echo 'DoneGone CI and automated API tests completed successfully.'
         }
 
         failure {

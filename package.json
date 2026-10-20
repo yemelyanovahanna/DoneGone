@@ -1,0 +1,12 @@
+{
+  "name": "donegone-api-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stage 3 Postman and Newman API tests",
+  "scripts": {
+    "test:api": "node scripts/run-newman.js"
+  },
+  "devDependencies": {
+    "newman": "6.2.1"
+  }
+}
