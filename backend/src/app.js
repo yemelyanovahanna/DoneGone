@@ -6,6 +6,9 @@ const projectRoutes = require('./routes/projects');
 const taskRoutes = require('./routes/tasks');
 
 const app = express();
+const metrics = require('./metrics');
+app.use(metrics.middleware);
+app.get('/metrics', metrics.endpoint);
 app.use(cors());
 app.use(express.json());
 

@@ -1,0 +1,18 @@
+{
+  "collection": "DoneGone Stage 3 REST API",
+  "finishedAt": "2026-10-26T20:34:59.374Z",
+  "success": true,
+  "requests": {
+    "total": 30,
+    "pending": 0,
+    "failed": 0
+  },
+  "assertions": {
+    "total": 87,
+    "pending": 0,
+    "failed": 0
+  },
+  "durationMs": 844,
+  "failures": [],
+  "runnerError": null
+}

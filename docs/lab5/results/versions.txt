@@ -1,0 +1,13 @@
+ProductName:		macOS
+ProductVersion:		26.0.1
+BuildVersion:		25A362
+Docker version 29.8.2, build 7fc2dff
+Client Version: v1.37.1
+Kustomize Version: v5.8.1
+Server Version: v1.37.0
+v3.22.1+gd6c1a0e
+Terraform v1.17.0
+on darwin_arm64
+
+minikube version: v1.39.0
+commit: 7a9f6a841470a207de8cf4bafcccee0969d8ba10

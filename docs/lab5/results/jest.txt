@@ -1,0 +1,13 @@
+
+> donegone-backend@1.0.0 test
+> jest --runInBand
+
+PASS tests/metrics.test.js
+PASS tests/health.test.js
+PASS tests/ready.test.js
+
+Test Suites: 3 passed, 3 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        0.376 s, estimated 1 s
+Ran all test suites.

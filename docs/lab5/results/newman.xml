@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="DoneGone Stage 3 REST API" tests="30" time="0.506">
+  <testsuite name="Health" id="9fea40eb-cf2c-4cee-a8aa-668753a6a63a" timestamp="2026-10-26T20:34:58.523Z" tests="4" failures="0" errors="0" time="0.016">
+    <testcase name="HTTP 200" time="0.016" classname="Health"/>
+    <testcase name="JSON response" time="0.016" classname="Health"/>
+    <testcase name="DoneGone is healthy" time="0.016" classname="Health"/>
+    <testcase name="Configured health expectation" time="0.016" classname="Health"/>
+  </testsuite>
+  <testsuite name="Database readiness" id="22945943-3a5f-428d-b200-3d0092bcd483" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.010">
+    <testcase name="HTTP 200" time="0.010" classname="DatabaseReadiness"/>
+    <testcase name="JSON response" time="0.010" classname="DatabaseReadiness"/>
+    <testcase name="Database schema ready" time="0.010" classname="DatabaseReadiness"/>
+  </testsuite>
+  <testsuite name="Register owner" id="7a4f7645-48d9-493c-97cf-6586b6889c66" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.083">
+    <testcase name="HTTP 201" time="0.083" classname="RegisterOwner"/>
+    <testcase name="JSON response" time="0.083" classname="RegisterOwner"/>
+    <testcase name="Registered email" time="0.083" classname="RegisterOwner"/>
+  </testsuite>
+  <testsuite name="Reject duplicate registration" id="ac1d1a02-dd82-4182-beed-e7e1abbd28e1" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.063">
+    <testcase name="HTTP 409" time="0.063" classname="RejectDuplicateRegistration"/>
+    <testcase name="JSON response" time="0.063" classname="RejectDuplicateRegistration"/>
+    <testcase name="Error message" time="0.063" classname="RejectDuplicateRegistration"/>
+  </testsuite>
+  <testsuite name="Reject incomplete registration" id="bce6a083-f778-457d-b488-aad9ac726ba8" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.002">
+    <testcase name="HTTP 400" time="0.002" classname="RejectIncompleteRegistration"/>
+    <testcase name="JSON response" time="0.002" classname="RejectIncompleteRegistration"/>
+    <testcase name="Error message" time="0.002" classname="RejectIncompleteRegistration"/>
+  </testsuite>
+  <testsuite name="Reject incorrect password" id="b8de716f-15f7-4a92-8c59-71a3a2f5dbe3" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.068">
+    <testcase name="HTTP 401" time="0.068" classname="RejectIncorrectPassword"/>
+    <testcase name="JSON response" time="0.068" classname="RejectIncorrectPassword"/>
+    <testcase name="Error message" time="0.068" classname="RejectIncorrectPassword"/>
+  </testsuite>
+  <testsuite name="Login owner" id="543b597e-b8ca-4226-aae4-e54cae271801" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.065">
+    <testcase name="HTTP 200" time="0.065" classname="LoginOwner"/>
+    <testcase name="JSON response" time="0.065" classname="LoginOwner"/>
+    <testcase name="JWT returned" time="0.065" classname="LoginOwner"/>
+  </testsuite>
+  <testsuite name="Reject unauthenticated projects" id="b3349327-8dde-4b1b-a173-842137fb1120" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 401" time="0.003" classname="RejectUnauthenticatedProjects"/>
+    <testcase name="JSON response" time="0.003" classname="RejectUnauthenticatedProjects"/>
+    <testcase name="Error message" time="0.003" classname="RejectUnauthenticatedProjects"/>
+  </testsuite>
+  <testsuite name="Reject invalid token" id="b6853fd5-85f6-461a-b5a2-47271a58a145" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.002">
+    <testcase name="HTTP 401" time="0.002" classname="RejectInvalidToken"/>
+    <testcase name="JSON response" time="0.002" classname="RejectInvalidToken"/>
+    <testcase name="Error message" time="0.002" classname="RejectInvalidToken"/>
+  </testsuite>
+  <testsuite name="Reject empty project" id="6d2cb957-1db9-49e5-b22a-c09525ee8a1d" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="HTTP 400" time="0.004" classname="RejectEmptyProject"/>
+    <testcase name="JSON response" time="0.004" classname="RejectEmptyProject"/>
+    <testcase name="Error message" time="0.004" classname="RejectEmptyProject"/>
+  </testsuite>
+  <testsuite name="Create project" id="da3da96f-a2dc-4b04-a372-9790a1b551bd" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="HTTP 201" time="0.004" classname="CreateProject"/>
+    <testcase name="JSON response" time="0.004" classname="CreateProject"/>
+    <testcase name="Project owner" time="0.004" classname="CreateProject"/>
+  </testsuite>
+  <testsuite name="Get projects" id="476acfc5-6fcc-4a2a-9073-c0606b1a650a" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="HTTP 200" time="0.005" classname="GetProjects"/>
+    <testcase name="JSON response" time="0.005" classname="GetProjects"/>
+    <testcase name="Created project is listed" time="0.005" classname="GetProjects"/>
+  </testsuite>
+  <testsuite name="Edit project" id="d5d1153d-3bc8-4fba-aa29-d7d15fee17d8" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="HTTP 200" time="0.004" classname="EditProject"/>
+    <testcase name="JSON response" time="0.004" classname="EditProject"/>
+    <testcase name="Project updated" time="0.004" classname="EditProject"/>
+  </testsuite>
+  <testsuite name="Verify edited project" id="a62ef8cb-048e-4795-8ed6-eaa54220051a" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 200" time="0.003" classname="VerifyEditedProject"/>
+    <testcase name="JSON response" time="0.003" classname="VerifyEditedProject"/>
+    <testcase name="Saved project update" time="0.003" classname="VerifyEditedProject"/>
+  </testsuite>
+  <testsuite name="Register outsider" id="4847295e-9ad4-407f-b951-28ca39fd53d8" timestamp="2026-10-26T20:34:58.523Z" tests="2" failures="0" errors="0" time="0.066">
+    <testcase name="HTTP 201" time="0.066" classname="RegisterOutsider"/>
+    <testcase name="JSON response" time="0.066" classname="RegisterOutsider"/>
+  </testsuite>
+  <testsuite name="Login outsider" id="6a6d903b-19c6-45a0-827d-7fbe7cdee376" timestamp="2026-10-26T20:34:58.523Z" tests="2" failures="0" errors="0" time="0.064">
+    <testcase name="HTTP 200" time="0.064" classname="LoginOutsider"/>
+    <testcase name="JSON response" time="0.064" classname="LoginOutsider"/>
+  </testsuite>
+  <testsuite name="Reject project edit by outsider" id="2c2c464f-612e-4607-8d5e-a4d56c868e49" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.002">
+    <testcase name="HTTP 403" time="0.002" classname="RejectProjectEditByOutsider"/>
+    <testcase name="JSON response" time="0.002" classname="RejectProjectEditByOutsider"/>
+    <testcase name="Error message" time="0.002" classname="RejectProjectEditByOutsider"/>
+  </testsuite>
+  <testsuite name="Reject task without title" id="13939f0e-3cb7-4bb3-9fb4-1af593d44736" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 400" time="0.003" classname="RejectTaskWithoutTitle"/>
+    <testcase name="JSON response" time="0.003" classname="RejectTaskWithoutTitle"/>
+    <testcase name="Error message" time="0.003" classname="RejectTaskWithoutTitle"/>
+  </testsuite>
+  <testsuite name="Reject unknown project" id="90aa3fa0-94a8-4d80-84c9-fbb35e60c987" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 404" time="0.003" classname="RejectUnknownProject"/>
+    <testcase name="JSON response" time="0.003" classname="RejectUnknownProject"/>
+    <testcase name="Error message" time="0.003" classname="RejectUnknownProject"/>
+  </testsuite>
+  <testsuite name="Create task" id="dc6d6a8a-653e-46f2-a619-e525e7577a2a" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="HTTP 201" time="0.004" classname="CreateTask"/>
+    <testcase name="JSON response" time="0.004" classname="CreateTask"/>
+    <testcase name="Task starts in To Do" time="0.004" classname="CreateTask"/>
+  </testsuite>
+  <testsuite name="Get project tasks" id="8e85e3c8-9498-4be6-a1ea-2b25de68911e" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="HTTP 200" time="0.004" classname="GetProjectTasks"/>
+    <testcase name="JSON response" time="0.004" classname="GetProjectTasks"/>
+    <testcase name="Created task is listed" time="0.004" classname="GetProjectTasks"/>
+  </testsuite>
+  <testsuite name="Reject task access by outsider" id="2dd8eb9d-041f-4f3a-8ede-3a094eb5dcbd" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 404" time="0.003" classname="RejectTaskAccessByOutsider"/>
+    <testcase name="JSON response" time="0.003" classname="RejectTaskAccessByOutsider"/>
+    <testcase name="Error message" time="0.003" classname="RejectTaskAccessByOutsider"/>
+  </testsuite>
+  <testsuite name="Reject unauthenticated task update" id="685d8f72-7a99-411c-a930-02de9bc14526" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.002">
+    <testcase name="HTTP 401" time="0.002" classname="RejectUnauthenticatedTaskUpdate"/>
+    <testcase name="JSON response" time="0.002" classname="RejectUnauthenticatedTaskUpdate"/>
+    <testcase name="Error message" time="0.002" classname="RejectUnauthenticatedTaskUpdate"/>
+  </testsuite>
+  <testsuite name="Edit task and move to Done" id="6cc30a2b-19c2-4a47-9e51-9b8151ad69ed" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.005">
+    <testcase name="HTTP 200" time="0.005" classname="EditTaskAndMoveToDone"/>
+    <testcase name="JSON response" time="0.005" classname="EditTaskAndMoveToDone"/>
+    <testcase name="Task fields updated" time="0.005" classname="EditTaskAndMoveToDone"/>
+  </testsuite>
+  <testsuite name="Verify saved task update" id="57f09adb-9109-47c0-839a-bee0d12928bb" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.002">
+    <testcase name="HTTP 200" time="0.002" classname="VerifySavedTaskUpdate"/>
+    <testcase name="JSON response" time="0.002" classname="VerifySavedTaskUpdate"/>
+    <testcase name="Task update persisted" time="0.002" classname="VerifySavedTaskUpdate"/>
+  </testsuite>
+  <testsuite name="Project task statistics" id="cda19fb5-6ad4-4f2a-b7c6-90ea75e129ea" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.004">
+    <testcase name="HTTP 200" time="0.004" classname="ProjectTaskStatistics"/>
+    <testcase name="JSON response" time="0.004" classname="ProjectTaskStatistics"/>
+    <testcase name="Completed task counted" time="0.004" classname="ProjectTaskStatistics"/>
+  </testsuite>
+  <testsuite name="Delete task" id="1a24ec30-ba41-4ddf-9e65-1b0bfc204992" timestamp="2026-10-26T20:34:58.523Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 204" time="0.003" classname="DeleteTask"/>
+    <testcase name="Empty response body" time="0.003" classname="DeleteTask"/>
+  </testsuite>
+  <testsuite name="Verify task deleted" id="89b6ebe6-c77f-4804-bc59-63a436825e33" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 200" time="0.003" classname="VerifyTaskDeleted"/>
+    <testcase name="JSON response" time="0.003" classname="VerifyTaskDeleted"/>
+    <testcase name="Task list is empty" time="0.003" classname="VerifyTaskDeleted"/>
+  </testsuite>
+  <testsuite name="Delete project" id="465ea75e-f6a5-4942-9454-0ac15e99fc53" timestamp="2026-10-26T20:34:58.523Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 204" time="0.003" classname="DeleteProject"/>
+    <testcase name="Empty response body" time="0.003" classname="DeleteProject"/>
+  </testsuite>
+  <testsuite name="Verify project deleted" id="97fab067-7ed5-4fa4-9d82-7e87a9043989" timestamp="2026-10-26T20:34:58.523Z" tests="3" failures="0" errors="0" time="0.003">
+    <testcase name="HTTP 200" time="0.003" classname="VerifyProjectDeleted"/>
+    <testcase name="JSON response" time="0.003" classname="VerifyProjectDeleted"/>
+    <testcase name="Deleted project absent" time="0.003" classname="VerifyProjectDeleted"/>
+  </testsuite>
+</testsuites>

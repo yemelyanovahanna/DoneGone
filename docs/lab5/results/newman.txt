@@ -1,0 +1,206 @@
+
+> donegone-api-tests@1.0.0 test:api
+> node scripts/run-newman.js
+
+(node:62230) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+DoneGone Stage 3 REST API
+
+→ Health
+  GET http://127.0.0.1:8085/api/health [200 OK, 298B, 16ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  DoneGone is healthy
+  ✓  Configured health expectation
+
+→ Database readiness
+  GET http://127.0.0.1:8085/api/ready [200 OK, 301B, 10ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Database schema ready
+
+→ Register owner
+  POST http://127.0.0.1:8085/api/auth/register [201 Created, 346B, 83ms]
+  ✓  HTTP 201
+  ✓  JSON response
+  ✓  Registered email
+
+→ Reject duplicate registration
+  POST http://127.0.0.1:8085/api/auth/register [409 Conflict, 303B, 63ms]
+  ✓  HTTP 409
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject incomplete registration
+  POST http://127.0.0.1:8085/api/auth/register [400 Bad Request, 318B, 2ms]
+  ✓  HTTP 400
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject incorrect password
+  POST http://127.0.0.1:8085/api/auth/login [401 Unauthorized, 307B, 68ms]
+  ✓  HTTP 401
+  ✓  JSON response
+  ✓  Error message
+
+→ Login owner
+  POST http://127.0.0.1:8085/api/auth/login [200 OK, 506B, 65ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  JWT returned
+
+→ Reject unauthenticated projects
+  GET http://127.0.0.1:8085/api/projects [401 Unauthorized, 300B, 3ms]
+  ✓  HTTP 401
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject invalid token
+  GET http://127.0.0.1:8085/api/projects [401 Unauthorized, 301B, 2ms]
+  ✓  HTTP 401
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject empty project
+  POST http://127.0.0.1:8085/api/projects [400 Bad Request, 311B, 4ms]
+  ✓  HTTP 400
+  ✓  JSON response
+  ✓  Error message
+
+→ Create project
+  POST http://127.0.0.1:8085/api/projects [201 Created, 422B, 4ms]
+  ✓  HTTP 201
+  ✓  JSON response
+  ✓  Project owner
+
+→ Get projects
+  GET http://127.0.0.1:8085/api/projects [200 OK, 419B, 5ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Created project is listed
+
+→ Edit project
+  PUT http://127.0.0.1:8085/api/projects/1 [200 OK, 432B, 4ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Project updated
+
+→ Verify edited project
+  GET http://127.0.0.1:8085/api/projects [200 OK, 434B, 3ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Saved project update
+
+→ Register outsider
+  POST http://127.0.0.1:8085/api/auth/register [201 Created, 348B, 66ms]
+  ✓  HTTP 201
+  ✓  JSON response
+
+→ Login outsider
+  POST http://127.0.0.1:8085/api/auth/login [200 OK, 508B, 64ms]
+  ✓  HTTP 200
+  ✓  JSON response
+
+→ Reject project edit by outsider
+  PUT http://127.0.0.1:8085/api/projects/1 [403 Forbidden, 321B, 2ms]
+  ✓  HTTP 403
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject task without title
+  POST http://127.0.0.1:8085/api/tasks [400 Bad Request, 320B, 3ms]
+  ✓  HTTP 400
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject unknown project
+  GET http://127.0.0.1:8085/api/tasks/project/2147483647 [404 Not Found, 302B, 3ms]
+  ✓  HTTP 404
+  ✓  JSON response
+  ✓  Error message
+
+→ Create task
+  POST http://127.0.0.1:8085/api/tasks [201 Created, 474B, 4ms]
+  ✓  HTTP 201
+  ✓  JSON response
+  ✓  Task starts in To Do
+
+→ Get project tasks
+  GET http://127.0.0.1:8085/api/tasks/project/1 [200 OK, 493B, 4ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Created task is listed
+
+→ Reject task access by outsider
+  GET http://127.0.0.1:8085/api/tasks/project/1 [404 Not Found, 302B, 3ms]
+  ✓  HTTP 404
+  ✓  JSON response
+  ✓  Error message
+
+→ Reject unauthenticated task update
+  PUT http://127.0.0.1:8085/api/tasks/1 [401 Unauthorized, 300B, 2ms]
+  ✓  HTTP 401
+  ✓  JSON response
+  ✓  Error message
+
+→ Edit task and move to Done
+  PUT http://127.0.0.1:8085/api/tasks/1 [200 OK, 467B, 5ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Task fields updated
+
+→ Verify saved task update
+  GET http://127.0.0.1:8085/api/tasks/project/1 [200 OK, 491B, 2ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Task update persisted
+
+→ Project task statistics
+  GET http://127.0.0.1:8085/api/tasks/project/1/stats [200 OK, 299B, 4ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Completed task counted
+
+→ Delete task
+  DELETE http://127.0.0.1:8085/api/tasks/1 [204 No Content, 165B, 3ms]
+  ✓  HTTP 204
+  ✓  Empty response body
+
+→ Verify task deleted
+  GET http://127.0.0.1:8085/api/tasks/project/1 [200 OK, 266B, 3ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Task list is empty
+
+→ Delete project
+  DELETE http://127.0.0.1:8085/api/projects/1 [204 No Content, 165B, 3ms]
+  ✓  HTTP 204
+  ✓  Empty response body
+
+→ Verify project deleted
+  GET http://127.0.0.1:8085/api/projects [200 OK, 266B, 3ms]
+  ✓  HTTP 200
+  ✓  JSON response
+  ✓  Deleted project absent
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │               30 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │               30 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │               30 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │               87 │                0 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 844ms                                     │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 2.59kB (approx)                          │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 16ms [min: 2ms, max: 83ms, s.d.: 25ms] │
+└───────────────────────────────────────────────────────────────┘

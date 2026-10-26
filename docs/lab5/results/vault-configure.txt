@@ -1,0 +1,12 @@
+Success! Enabled kubernetes auth method at: kubernetes/
+Success! Uploaded policy: myapp-policy
+WARNING! The following warnings were returned from Vault:
+
+  * Role myapp does not have an audience configured. While audiences are
+  not required, consider specifying one if your use case would benefit from
+  additional JWT claim verification.
+
+serviceaccount/myapp-sa created
+deployment.apps/myapp created
+Waiting for deployment "myapp" rollout to finish: 0 of 1 updated replicas are available...
+deployment "myapp" successfully rolled out

@@ -1,0 +1,24 @@
+docker_network.app: Refreshing state... [id=068453f45bd3876883ee6b90f28d3703f838a61cd7f36c5baaa07e057024fbd1]
+random_password.db: Refreshing state... [id=none]
+docker_volume.data["prometheus"]: Refreshing state... [id=donegone-stage4-prometheus]
+docker_volume.data["grafana"]: Refreshing state... [id=donegone-stage4-grafana]
+random_password.jwt: Refreshing state... [id=none]
+random_password.grafana: Refreshing state... [id=none]
+docker_image.backend: Refreshing state... [id=sha256:c08deef8bf5d96bb4e35e6b079434a750d7318c1eb6dddcea7382e44734b21a1donegone-backend:stage4]
+docker_volume.data["postgres"]: Refreshing state... [id=donegone-stage4-postgres]
+docker_image.external["prometheus"]: Refreshing state... [id=sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996prom/prometheus:v3.5.0]
+docker_image.external["blackbox"]: Refreshing state... [id=sha256:a50c4c0eda297baa1678cd4dc4712a67fdea713b832d43ce7fcc5f9bea05094dprom/blackbox-exporter:v0.27.0]
+docker_image.external["db"]: Refreshing state... [id=sha256:f7d23353e1b15400d22ebe31189f4d314b87a4c129cc400c8c2d8d4ca127bf81postgres:15-alpine]
+docker_image.external["grafana"]: Refreshing state... [id=sha256:74144189b38447facf737dfd0f3906e42e0776212bf575dc3334c3609183adf7grafana/grafana:12.2.0]
+docker_image.frontend: Refreshing state... [id=sha256:5dd1329f981cdb9423ed227caf63175463eb9806f1299612c6ba1ca8598c4201donegone-frontend:stage4]
+docker_container.blackbox: Refreshing state... [id=859a39ce86359a8ff74ed0578c2e24972cb47daa10a5f90d13fbd1e529032d95]
+docker_container.db: Refreshing state... [id=6dc703720d2aaa032392297444b6a48aeec8f8ff9344f44705f53630a75f5b8e]
+docker_container.backend: Refreshing state... [id=773f43d0d27501334166de639df1a9c0e4f2f7ffece81b02d99c77a58edc8265]
+docker_container.frontend: Refreshing state... [id=206f6914d77d48b18774bb109c1e66b410a0452cfa007df5a2265885af5b211f]
+docker_container.prometheus: Refreshing state... [id=164ca27a51a5f05b93c3d8cbdb543d2f00432a8a6637602003b65e77c7d41be4]
+docker_container.grafana: Refreshing state... [id=2a74d060d6d5a0df7f338852dbfca56159b014ecca946dc1da5112196d888217]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.

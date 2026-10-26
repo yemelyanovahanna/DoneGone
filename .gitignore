@@ -7,3 +7,13 @@ coverage/
 reports/
 evidence/
 .local-*
+
+# Terraform states and local secrets
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.example.tfvars
+crash.log
+.terraform.tfstate.lock.info

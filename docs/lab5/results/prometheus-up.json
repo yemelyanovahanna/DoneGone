@@ -1,0 +1,1 @@
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"up","instance":"http://backend:3000/api/health","job":"donegone-health"},"value":[1793047068.237,"1"]},{"metric":{"__name__":"up","instance":"backend:3000","job":"donegone-backend"},"value":[1793047068.237,"1"]}]}}

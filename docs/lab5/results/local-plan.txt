@@ -1,0 +1,565 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # docker_container.backend will be created
+  + resource "docker_container" "backend" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (sensitive value)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "donegone-stage4-backend"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = [
+              + "backend",
+            ]
+          + name         = "donegone-stage4-network"
+            # (3 unchanged attributes hidden)
+        }
+    }
+
+  # docker_container.blackbox will be created
+  + resource "docker_container" "blackbox" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = [
+          + "--config.file=/etc/blackbox.yml",
+        ]
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "donegone-stage4-blackbox"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = [
+              + "blackbox",
+            ]
+          + name         = "donegone-stage4-network"
+            # (3 unchanged attributes hidden)
+        }
+
+      + volumes {
+          + container_path = "/etc/blackbox.yml"
+          + host_path      = "/Users/yemelyaa/Downloads/DoneGone-stage12/monitoring/blackbox.yml"
+          + read_only      = true
+            # (2 unchanged attributes hidden)
+        }
+    }
+
+  # docker_container.db will be created
+  + resource "docker_container" "db" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (sensitive value)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "donegone-stage4-db"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = true
+      + wait_timeout                                = 180
+
+      + healthcheck {
+          + interval       = "2s"
+          + retries        = 30
+          + start_interval = "0s"
+          + start_period   = "0s"
+          + test           = [
+              + "CMD-SHELL",
+              + "pg_isready -U donegone -d donegone",
+            ]
+          + timeout        = "3s"
+        }
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = [
+              + "db",
+            ]
+          + name         = "donegone-stage4-network"
+            # (3 unchanged attributes hidden)
+        }
+
+      + volumes {
+          + container_path = "/docker-entrypoint-initdb.d/01-init.sql"
+          + host_path      = "/Users/yemelyaa/Downloads/DoneGone-stage12/database/init.sql"
+          + read_only      = true
+            # (2 unchanged attributes hidden)
+        }
+      + volumes {
+          + container_path = "/var/lib/postgresql/data"
+          + volume_name    = "donegone-stage4-postgres"
+            # (2 unchanged attributes hidden)
+        }
+    }
+
+  # docker_container.frontend will be created
+  + resource "docker_container" "frontend" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "donegone-stage4-frontend"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = []
+          + name         = "donegone-stage4-network"
+            # (3 unchanged attributes hidden)
+        }
+
+      + ports {
+          + external = 8085
+          + internal = 80
+          + ip       = "127.0.0.1"
+          + protocol = "tcp"
+        }
+    }
+
+  # docker_container.grafana will be created
+  + resource "docker_container" "grafana" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (sensitive value)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "donegone-stage4-grafana"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = []
+          + name         = "donegone-stage4-network"
+            # (3 unchanged attributes hidden)
+        }
+
+      + ports {
+          + external = 3005
+          + internal = 3000
+          + ip       = "127.0.0.1"
+          + protocol = "tcp"
+        }
+
+      + volumes {
+          + container_path = "/etc/grafana/provisioning"
+          + host_path      = "/Users/yemelyaa/Downloads/DoneGone-stage12/monitoring/grafana/provisioning"
+          + read_only      = true
+            # (2 unchanged attributes hidden)
+        }
+      + volumes {
+          + container_path = "/var/lib/grafana"
+          + volume_name    = "donegone-stage4-grafana"
+            # (2 unchanged attributes hidden)
+        }
+      + volumes {
+          + container_path = "/var/lib/grafana/dashboards"
+          + host_path      = "/Users/yemelyaa/Downloads/DoneGone-stage12/monitoring/grafana/dashboards"
+          + read_only      = true
+            # (2 unchanged attributes hidden)
+        }
+    }
+
+  # docker_container.prometheus will be created
+  + resource "docker_container" "prometheus" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "donegone-stage4-prometheus"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "no"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck (known after apply)
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases      = [
+              + "prometheus",
+            ]
+          + name         = "donegone-stage4-network"
+            # (3 unchanged attributes hidden)
+        }
+
+      + ports {
+          + external = 9095
+          + internal = 9090
+          + ip       = "127.0.0.1"
+          + protocol = "tcp"
+        }
+
+      + volumes {
+          + container_path = "/etc/prometheus/prometheus.yml"
+          + host_path      = "/Users/yemelyaa/Downloads/DoneGone-stage12/monitoring/prometheus.yml"
+          + read_only      = true
+            # (2 unchanged attributes hidden)
+        }
+      + volumes {
+          + container_path = "/prometheus"
+          + volume_name    = "donegone-stage4-prometheus"
+            # (2 unchanged attributes hidden)
+        }
+    }
+
+  # docker_image.backend will be created
+  + resource "docker_image" "backend" {
+      + id          = (known after apply)
+      + image_id    = (known after apply)
+      + name        = "donegone-backend:stage4"
+      + repo_digest = (known after apply)
+
+      + build {
+          + additional_contexts = []
+          + cache_from          = []
+          + cache_to            = []
+          + context             = "/Users/yemelyaa/Downloads/DoneGone-stage12/backend"
+          + dockerfile          = "Dockerfile"
+          + extra_hosts         = []
+          + remove              = true
+          + security_opt        = []
+          + tag                 = []
+            # (13 unchanged attributes hidden)
+        }
+    }
+
+  # docker_image.external["blackbox"] will be created
+  + resource "docker_image" "external" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "prom/blackbox-exporter:v0.27.0"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.external["db"] will be created
+  + resource "docker_image" "external" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "postgres:15-alpine"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.external["grafana"] will be created
+  + resource "docker_image" "external" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "grafana/grafana:12.2.0"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.external["prometheus"] will be created
+  + resource "docker_image" "external" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "prom/prometheus:v3.5.0"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_image.frontend will be created
+  + resource "docker_image" "frontend" {
+      + id          = (known after apply)
+      + image_id    = (known after apply)
+      + name        = "donegone-frontend:stage4"
+      + repo_digest = (known after apply)
+
+      + build {
+          + additional_contexts = []
+          + cache_from          = []
+          + cache_to            = []
+          + context             = "/Users/yemelyaa/Downloads/DoneGone-stage12/frontend"
+          + dockerfile          = "Dockerfile"
+          + extra_hosts         = []
+          + remove              = true
+          + security_opt        = []
+          + tag                 = []
+            # (13 unchanged attributes hidden)
+        }
+    }
+
+  # docker_network.app will be created
+  + resource "docker_network" "app" {
+      + driver      = (known after apply)
+      + id          = (known after apply)
+      + internal    = (known after apply)
+      + ipam_driver = "default"
+      + name        = "donegone-stage4-network"
+      + options     = (known after apply)
+      + scope       = (known after apply)
+
+      + ipam_config (known after apply)
+    }
+
+  # docker_volume.data["grafana"] will be created
+  + resource "docker_volume" "data" {
+      + driver     = (known after apply)
+      + id         = (known after apply)
+      + mountpoint = (known after apply)
+      + name       = "donegone-stage4-grafana"
+    }
+
+  # docker_volume.data["postgres"] will be created
+  + resource "docker_volume" "data" {
+      + driver     = (known after apply)
+      + id         = (known after apply)
+      + mountpoint = (known after apply)
+      + name       = "donegone-stage4-postgres"
+    }
+
+  # docker_volume.data["prometheus"] will be created
+  + resource "docker_volume" "data" {
+      + driver     = (known after apply)
+      + id         = (known after apply)
+      + mountpoint = (known after apply)
+      + name       = "donegone-stage4-prometheus"
+    }
+
+  # random_password.db will be created
+  + resource "random_password" "db" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 32
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+  # random_password.grafana will be created
+  + resource "random_password" "grafana" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 32
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+  # random_password.jwt will be created
+  + resource "random_password" "jwt" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 48
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
+    }
+
+Plan: 19 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + app_url          = "http://127.0.0.1:8085"
+  + grafana_password = (sensitive value)
+  + grafana_url      = "http://127.0.0.1:3005/d/donegone-stage4"
+  + prometheus_url   = "http://127.0.0.1:9095"
+
+─────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: stage4.tfplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "stage4.tfplan"

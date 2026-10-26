@@ -1,0 +1,7 @@
+NAMES                        STATUS                   PORTS
+donegone-stage4-frontend     Up 3 minutes             127.0.0.1:8085->80/tcp
+donegone-stage4-backend      Up 3 minutes             3000/tcp
+donegone-stage4-grafana      Up 6 minutes             127.0.0.1:3005->3000/tcp
+donegone-stage4-prometheus   Up 7 minutes             127.0.0.1:9095->9090/tcp
+donegone-stage4-blackbox     Up 7 minutes             9115/tcp
+donegone-stage4-db           Up 7 minutes (healthy)   5432/tcp

@@ -1,0 +1,225 @@
+[0m[32m[1mCreated and switched to workspace "dev"![0m[32m
+
+You're now on a new, empty workspace. Workspaces isolate their state,
+so if you run "terraform plan" Terraform will not see any existing state
+for this configuration.[0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # terraform_data.environment will be created
+  + resource "terraform_data" "environment" {
+      + id     = (known after apply)
+      + input  = {
+          + environment   = "dev"
+          + instance_type = "t3.micro"
+        }
+      + output = (known after apply)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + environment = (known after apply)
+terraform_data.environment: Creating...
+terraform_data.environment: Creation complete after 0s [id=3db69bf5-0fba-43c9-d369-c73a86d314d1]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+environment = {
+  "environment" = "dev"
+  "instance_type" = "t3.micro"
+}
+environment = {
+  "environment" = "dev"
+  "instance_type" = "t3.micro"
+}
+terraform_data.environment: Refreshing state... [id=3db69bf5-0fba-43c9-d369-c73a86d314d1]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # terraform_data.environment will be destroyed
+  - resource "terraform_data" "environment" {
+      - id     = "3db69bf5-0fba-43c9-d369-c73a86d314d1" -> null
+      - input  = {
+          - environment   = "dev"
+          - instance_type = "t3.micro"
+        } -> null
+      - output = {
+          - environment   = "dev"
+          - instance_type = "t3.micro"
+        } -> null
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+Changes to Outputs:
+  - environment = {
+      - environment   = "dev"
+      - instance_type = "t3.micro"
+    } -> null
+terraform_data.environment: Destroying... [id=3db69bf5-0fba-43c9-d369-c73a86d314d1]
+terraform_data.environment: Destruction complete after 0s
+
+Destroy complete! Resources: 1 destroyed.
+[0m[32m[1mCreated and switched to workspace "staging"![0m[32m
+
+You're now on a new, empty workspace. Workspaces isolate their state,
+so if you run "terraform plan" Terraform will not see any existing state
+for this configuration.[0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # terraform_data.environment will be created
+  + resource "terraform_data" "environment" {
+      + id     = (known after apply)
+      + input  = {
+          + environment   = "staging"
+          + instance_type = "t3.small"
+        }
+      + output = (known after apply)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + environment = (known after apply)
+terraform_data.environment: Creating...
+terraform_data.environment: Creation complete after 0s [id=c7f8419a-0b61-93c8-0d94-03aa23471901]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+environment = {
+  "environment" = "staging"
+  "instance_type" = "t3.small"
+}
+environment = {
+  "environment" = "staging"
+  "instance_type" = "t3.small"
+}
+terraform_data.environment: Refreshing state... [id=c7f8419a-0b61-93c8-0d94-03aa23471901]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # terraform_data.environment will be destroyed
+  - resource "terraform_data" "environment" {
+      - id     = "c7f8419a-0b61-93c8-0d94-03aa23471901" -> null
+      - input  = {
+          - environment   = "staging"
+          - instance_type = "t3.small"
+        } -> null
+      - output = {
+          - environment   = "staging"
+          - instance_type = "t3.small"
+        } -> null
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+Changes to Outputs:
+  - environment = {
+      - environment   = "staging"
+      - instance_type = "t3.small"
+    } -> null
+terraform_data.environment: Destroying... [id=c7f8419a-0b61-93c8-0d94-03aa23471901]
+terraform_data.environment: Destruction complete after 0s
+
+Destroy complete! Resources: 1 destroyed.
+[0m[32m[1mCreated and switched to workspace "prod"![0m[32m
+
+You're now on a new, empty workspace. Workspaces isolate their state,
+so if you run "terraform plan" Terraform will not see any existing state
+for this configuration.[0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # terraform_data.environment will be created
+  + resource "terraform_data" "environment" {
+      + id     = (known after apply)
+      + input  = {
+          + environment   = "prod"
+          + instance_type = "t3.medium"
+        }
+      + output = (known after apply)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + environment = (known after apply)
+terraform_data.environment: Creating...
+terraform_data.environment: Creation complete after 0s [id=84d5b5ae-551d-1b0c-881b-dad978a1c084]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+environment = {
+  "environment" = "prod"
+  "instance_type" = "t3.medium"
+}
+environment = {
+  "environment" = "prod"
+  "instance_type" = "t3.medium"
+}
+terraform_data.environment: Refreshing state... [id=84d5b5ae-551d-1b0c-881b-dad978a1c084]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # terraform_data.environment will be destroyed
+  - resource "terraform_data" "environment" {
+      - id     = "84d5b5ae-551d-1b0c-881b-dad978a1c084" -> null
+      - input  = {
+          - environment   = "prod"
+          - instance_type = "t3.medium"
+        } -> null
+      - output = {
+          - environment   = "prod"
+          - instance_type = "t3.medium"
+        } -> null
+    }
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+Changes to Outputs:
+  - environment = {
+      - environment   = "prod"
+      - instance_type = "t3.medium"
+    } -> null
+terraform_data.environment: Destroying... [id=84d5b5ae-551d-1b0c-881b-dad978a1c084]
+terraform_data.environment: Destruction complete after 0s
+
+Destroy complete! Resources: 1 destroyed.
+  default
+  dev
+* prod
+  staging
+
+[0m[32mSwitched to workspace "default".[0m

@@ -1,0 +1,6 @@
+tests/offline.tftest.hcl... in progress
+  run "offline_plan"... pass
+tests/offline.tftest.hcl... tearing down
+tests/offline.tftest.hcl... pass
+
+Success! 1 passed, 0 failed.

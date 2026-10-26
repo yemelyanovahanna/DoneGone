@@ -1,0 +1,38 @@
+==> Vault Agent started! Log data will stream in below:
+
+2026-10-26T20:31:13.998Z [INFO]  agent.sink.file: creating file sink
+2026-10-26T20:31:13.998Z [INFO]  agent.sink.file: file sink configured: path=/home/vault/.vault-token mode=-rw-r----- owner=100 group=1000
+==> Vault Agent configuration:
+
+           Api Address 1: http://bufconn
+                     Cgo: disabled
+               Log Level: info
+                 Version: Vault v2.0.4, built 2026-08-03T16:14:36Z
+             Version Sha: c9e9d1d4ddd4b55aae79a8949adffa9e96338720
+
+2026-10-26T20:31:13.999Z [INFO]  agent.exec.server: starting exec server
+2026-10-26T20:31:13.999Z [INFO]  agent.exec.server: no env templates or exec config, exiting
+2026-10-26T20:31:13.999Z [INFO]  agent.auth.handler: starting auth handler
+2026-10-26T20:31:13.999Z [INFO]  agent.auth.handler: authenticating
+2026-10-26T20:31:13.999Z [INFO]  agent.sink.server: starting sink server
+2026-10-26T20:31:13.999Z [INFO]  agent.template.server: starting template server
+2026-10-26T20:31:13.999Z [INFO]  agent: (runner) creating new runner (dry: false, once: false)
+2026-10-26T20:31:13.999Z [INFO]  agent: (runner) creating watcher
+2026-10-26T20:31:14.007Z [INFO]  agent.auth.handler: authentication successful, sending token to sinks
+2026-10-26T20:31:14.007Z [INFO]  agent.auth.handler: starting renewal process
+2026-10-26T20:31:14.007Z [INFO]  agent.sink.file: token written: path=/home/vault/.vault-token
+2026-10-26T20:31:14.007Z [INFO]  agent.sink.server: sink server stopped
+2026-10-26T20:31:14.007Z [INFO]  agent: sinks finished, exiting
+2026-10-26T20:31:14.007Z [INFO]  agent.template.server: template server received new token
+2026-10-26T20:31:14.007Z [INFO]  agent: (runner) stopping
+2026-10-26T20:31:14.007Z [INFO]  agent: (runner) creating new runner (dry: false, once: false)
+2026-10-26T20:31:14.007Z [INFO]  agent: (runner) creating watcher
+2026-10-26T20:31:14.007Z [INFO]  agent: (runner) starting
+2026-10-26T20:31:14.008Z [INFO]  agent.auth.handler: renewed auth token
+2026-10-26T20:31:14.012Z [INFO]  agent: (runner) rendered "(dynamic)" => "/vault/secrets/config"
+2026-10-26T20:31:14.012Z [INFO]  agent: (runner) stopping
+2026-10-26T20:31:14.012Z [INFO]  agent.template.server: template server stopped
+2026-10-26T20:31:14.012Z [INFO]  agent: (runner) received finish
+2026-10-26T20:31:14.012Z [INFO]  agent.auth.handler: shutdown triggered, stopping lifetime watcher
+2026-10-26T20:31:14.012Z [INFO]  agent.auth.handler: auth handler stopped
+2026-10-26T20:31:14.012Z [INFO]  agent.exec.server: exec server stopped

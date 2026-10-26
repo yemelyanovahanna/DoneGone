@@ -1,0 +1,4 @@
+NAME                                    READY   STATUS    RESTARTS   AGE
+myapp-f6bdb7b75-5r4ft                   2/2     Running   0          46s
+vault-0                                 1/1     Running   0          97s
+vault-agent-injector-6f6b5575dc-rh2lh   1/1     Running   0          97s

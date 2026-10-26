@@ -1,0 +1,17 @@
+====== Secret Path ======
+secret/data/myapp/config
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2026-10-26T20:31:12.942280966Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+
+====== Data ======
+Key         Value
+---         -----
+password    lr5-demo-only
+username    lab-admin

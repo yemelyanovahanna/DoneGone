@@ -1,4 +1,8 @@
-# DoneGone Етап 3 Автоматизоване тестування REST API
+# DoneGone етап 4 Моніторинг та Infrastructure as Code
+
+Етап 4 додає метрики backend, Prometheus, Grafana та локальну Docker-інфраструктуру Terraform. Інструкції запуску, перевірок і зупинки: [docs/lab5/README.md](docs/lab5/README.md).
+
+## Етап 3 Автоматизоване тестування REST API
 
 Цей пакет відповідає етапу 3 на с. 11–12 файлу «Ємельянова DevOps КН41 ЛР1 нов.pdf».
 Результат: Postman Collection, запуск через Newman і перевірена інтеграція в Jenkins із зупинкою подальших стадій у разі помилки.
@@ -20,7 +24,7 @@
 - `docker-compose.ci.yml`: тестове середовище;
 - `Jenkinsfile`: CI, Newman перед публікацією образів, fail-fast і архівування звітів;
 - `package.json` та `package-lock.json`: зафіксована версія Newman 6.2.1;
-- `evidence/`: справжні скріншоти, журнали й результати успішного та контрольного невдалого запусків.
+- `docs/lab4/` і `docs/lab5/`: звіти, скріншоти та результати перевірок.
 
 ## Відтворення на macOS
 
@@ -67,7 +71,7 @@ npx --no-install newman run postman/DoneGone.postman_collection.json \
 
 Jenkins викликає shell-скрипт без придушення його ненульового коду виходу. JUnit і артефакти публікуються в post/always стадії тестування; падіння Newman не дозволяє перейти до наступних стадій.
 
-Фактичну перевірку виконано в окремому локальному Jenkins 2.580.1 на http://127.0.0.1:8094/job/DoneGone-Stage3-API/. Для цього стенда checkout scm замінено копіюванням локального знімка коду, а PUBLISH_IMAGES=false. Доставлений Jenkinsfile зберігає checkout scm і підтримку GHCR. Власний Jenkins користувачки, GitHub webhook та наявні credentials не змінювалися. На GitHub цей пакет ще не переносився.
+Фактичну перевірку виконано в окремому локальному Jenkins 2.580.1 на http://127.0.0.1:8094/job/DoneGone-Stage3-API/. Для цього стенда checkout scm замінено копіюванням локального знімка коду, а PUBLISH_IMAGES=false. Доставлений Jenkinsfile зберігає checkout scm і підтримку GHCR. Власний Jenkins користувачки, GitHub webhook та наявні credentials не змінювалися. Реалізація етапів 3–4 публікується в основній гілці main цього репозиторію.
 
 ## Зміни backend
 
@@ -75,7 +79,7 @@ Jenkins викликає shell-скрипт без придушення його
 
 ## Документація
 
-Вимоги й відповідність описані у `evidence/requirements-coverage.json`, текст для звіту — у `REPORT_SECTION_UA.md`. Нові файли підготовлено окремо, вихідна папка DoneGone-stage12 не змінена.
+Документація етапів і результати перевірок збережені у `docs/lab4/` та `docs/lab5/`. Актуальна реалізація знаходиться в основній папці проєкту та у гілці main.
 
 Офіційні довідки:
 - https://learning.postman.com/docs/reference/newman-cli/newman-options
