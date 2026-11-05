@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-export CI_DB_PASSWORD="$(node -e 'process.stdout.write(require("crypto").randomBytes(24).toString("hex"))')"
-export CI_JWT_SECRET="$(node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("hex"))')"
+export CI_DB_PASSWORD="${CI_DB_PASSWORD:-$(node -e 'process.stdout.write(require("crypto").randomBytes(24).toString("hex"))')}"
+export CI_JWT_SECRET="${CI_JWT_SECRET:-$(node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("hex"))')}"
 export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-donegone-api-$(date +%s)-$$}"
 COMPOSE=(docker compose -f docker-compose.ci.yml)
 mkdir -p reports

@@ -1,109 +1,70 @@
 pipeline {
     agent any
-
-    environment {
-        REGISTRY = 'ghcr.io'
-        GHCR_NAMESPACE = 'yemelyanovahanna'
-
-        BACKEND_IMAGE = 'donegone-backend'
-        FRONTEND_IMAGE = 'donegone-frontend'
-    }
-
     options {
         skipDefaultCheckout(true)
         disableConcurrentBuilds()
-        timeout(time: 20, unit: 'MINUTES')
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '15'))
     }
-
     parameters {
         booleanParam(name: 'PUBLISH_IMAGES', defaultValue: true, description: 'Publish tested images to GHCR')
-        booleanParam(name: 'VERIFY_FAILURE_GATE', defaultValue: false, description: 'Demonstrate a deliberately failing API assertion')
+        booleanParam(name: 'DEPLOY_APP', defaultValue: true, description: 'Deploy the published build with Docker Compose')
+        booleanParam(name: 'VERIFY_FAILURE_GATE', defaultValue: false, description: 'Deliberately fail one API assertion')
     }
-
+    environment {
+        GHCR_NAMESPACE = 'yemelyanovahanna'
+        DOCKER_HOST = 'unix:///Users/yemelyaa/.docker/run/docker.sock'
+    }
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
+                script { env.IMAGE_TAG = "stage5-${env.BUILD_NUMBER}-${sh(script: 'git rev-parse --short=12 HEAD', returnStdout: true).trim()}" }
+                sh 'mkdir -p reports; rm -f reports/gate-passed.txt reports/published-images.txt reports/deployment.txt reports/newman.xml reports/summary.json'
             }
         }
-
-        stage('Install') {
-            parallel {
-
-                stage('Backend dependencies') {
-                    steps {
-                        dir('backend') {
-                            sh 'npm ci'
-                        }
-                    }
-                }
-
-                stage('Frontend dependencies') {
-                    steps {
-                        dir('frontend') {
-                            sh 'npm ci'
-                        }
-                    }
-                }
-            }
+        stage('Repository credentials check') {
+            steps { sh 'node scripts/check-repository-secrets.js' }
         }
-
-        stage('Install Newman') {
-            steps { sh 'npm ci' }
-        }
-
-        stage('Lint') {
-            parallel {
-
-                stage('Backend lint') {
-                    steps {
-                        dir('backend') {
-                            sh 'npm run lint'
-                        }
-                    }
-                }
-
-                stage('Frontend lint') {
-                    steps {
-                        dir('frontend') {
-                            sh 'npm run lint'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Unit Tests') {
+        stage('Prepare Docker client') {
             steps {
-                dir('backend') {
-                    sh 'npm test'
-                }
+                sh '''
+                    mkdir -p .local-docker
+                    node -e 'require("fs").writeFileSync(".local-docker/config.json", JSON.stringify({auths:{"https://index.docker.io/v1/":{}},cliPluginsExtraDirs:["/Applications/Docker.app/Contents/Resources/cli-plugins"]}))'
+                '''
+                script { env.DOCKER_CONFIG = "${env.WORKSPACE}/.local-docker" }
             }
         }
-
+        stage('Install dependencies') {
+            steps {
+                sh 'npm ci && npm ci --prefix backend && npm ci --prefix frontend'
+            }
+        }
+        stage('Lint') {
+            steps { sh 'npm run lint --prefix backend && npm run lint --prefix frontend' }
+        }
+        stage('Unit Tests') {
+            steps { sh 'npm test --prefix backend' }
+        }
         stage('Docker Build') {
             steps {
                 sh '''
-                    docker build \
-                      -t donegone-backend:${BUILD_NUMBER} \
-                      ./backend
-
-                    docker build \
-                      -t donegone-frontend:${BUILD_NUMBER} \
-                      ./frontend
+                    docker build --label org.opencontainers.image.source=https://github.com/yemelyanovahanna/DoneGone -t "donegone-backend:$IMAGE_TAG" ./backend
+                    docker build --label org.opencontainers.image.source=https://github.com/yemelyanovahanna/DoneGone -t "donegone-frontend:$IMAGE_TAG" ./frontend
                 '''
             }
         }
-
-        stage('API Tests with Newman') {
+        stage('Compose and Newman') {
             steps {
-                withEnv([
-                    "BACKEND_IMAGE_REF=donegone-backend:${BUILD_NUMBER}",
-                    "FRONTEND_IMAGE_REF=donegone-frontend:${BUILD_NUMBER}",
-                    "EXPECT_HEALTH_STATUS=${params.VERIFY_FAILURE_GATE ? '201' : '200'}"
+                withCredentials([
+                    string(credentialsId: 'donegone-ci-db-password', variable: 'CI_DB_PASSWORD'),
+                    string(credentialsId: 'donegone-ci-jwt-secret', variable: 'CI_JWT_SECRET')
                 ]) {
-                    sh 'bash scripts/ci-api.sh'
+                    withEnv(["BACKEND_IMAGE_REF=donegone-backend:${env.IMAGE_TAG}",
+                             "FRONTEND_IMAGE_REF=donegone-frontend:${env.IMAGE_TAG}",
+                             "EXPECT_HEALTH_STATUS=${params.VERIFY_FAILURE_GATE ? '201' : '200'}"]) {
+                        sh 'bash scripts/ci-api.sh'
+                    }
                 }
             }
             post {
@@ -113,74 +74,31 @@ pipeline {
                 }
             }
         }
-
         stage('API Gate Passed') {
-            steps {
-                sh 'echo "API tests passed; subsequent stages are allowed" > reports/gate-passed.txt'
-                archiveArtifacts artifacts: 'reports/gate-passed.txt'
-            }
+            steps { sh 'echo "All API checks passed" > reports/gate-passed.txt' }
         }
-
-        stage('Push Docker Images') {
+        stage('Publish GHCR') {
             when { expression { params.PUBLISH_IMAGES } }
             steps {
-
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'ghcr-credentials',
-                        usernameVariable: 'GHCR_USER',
-                        passwordVariable: 'GHCR_TOKEN'
-                    )
-                ]) {
-
-                    sh '''
-                        echo "$GHCR_TOKEN" | \
-                        docker login "$REGISTRY" \
-                          -u "$GHCR_USER" \
-                          --password-stdin
-
-                        docker tag \
-                          donegone-backend:${BUILD_NUMBER} \
-                          "$REGISTRY/$GHCR_NAMESPACE/$BACKEND_IMAGE:${BUILD_NUMBER}"
-
-                        docker tag \
-                          donegone-backend:${BUILD_NUMBER} \
-                          "$REGISTRY/$GHCR_NAMESPACE/$BACKEND_IMAGE:latest"
-
-                        docker tag \
-                          donegone-frontend:${BUILD_NUMBER} \
-                          "$REGISTRY/$GHCR_NAMESPACE/$FRONTEND_IMAGE:${BUILD_NUMBER}"
-
-                        docker tag \
-                          donegone-frontend:${BUILD_NUMBER} \
-                          "$REGISTRY/$GHCR_NAMESPACE/$FRONTEND_IMAGE:latest"
-
-                        docker push \
-                          "$REGISTRY/$GHCR_NAMESPACE/$BACKEND_IMAGE:${BUILD_NUMBER}"
-
-                        docker push \
-                          "$REGISTRY/$GHCR_NAMESPACE/$BACKEND_IMAGE:latest"
-
-                        docker push \
-                          "$REGISTRY/$GHCR_NAMESPACE/$FRONTEND_IMAGE:${BUILD_NUMBER}"
-
-                        docker push \
-                          "$REGISTRY/$GHCR_NAMESPACE/$FRONTEND_IMAGE:latest"
-
-                        docker logout "$REGISTRY"
-                    '''
+                withCredentials([usernamePassword(credentialsId: 'ghcr-credentials', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
+                    sh 'bash scripts/publish-images.sh'
                 }
+                archiveArtifacts artifacts: 'reports/published-images.txt'
+            }
+        }
+        stage('Deploy Compose') {
+            when { expression { params.PUBLISH_IMAGES && params.DEPLOY_APP } }
+            steps {
+                withCredentials([
+                    string(credentialsId: 'donegone-stage5-db-password', variable: 'STAGE5_DB_PASSWORD'),
+                    string(credentialsId: 'donegone-stage5-jwt-secret', variable: 'STAGE5_JWT_SECRET')
+                ]) { sh 'bash scripts/deploy-stage5.sh' }
+                archiveArtifacts artifacts: 'reports/deployment.txt'
             }
         }
     }
-
     post {
-        success {
-            echo 'DoneGone CI and automated API tests completed successfully.'
-        }
-
-        failure {
-            echo 'DoneGone pipeline failed.'
-        }
+        success { echo 'DoneGone pipeline completed successfully. Check executed stages and archived evidence.' }
+        failure { echo 'DoneGone pipeline failed; subsequent stages were blocked.' }
     }
 }

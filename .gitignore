@@ -17,3 +17,10 @@ evidence/
 !*.example.tfvars
 crash.log
 .terraform.tfstate.lock.info
+
+# Stage 5 credentials and Lab 6 ephemeral SSH material
+.env.*
+!.env.example
+!**/.env.example
+.local-*/
+**/.local-*/

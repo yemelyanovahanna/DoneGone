@@ -1,0 +1,28 @@
+---
+- name: Configure web servers - part 2 base
+  hosts: webservers
+  become: true
+  vars:
+    app_name: myapp
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+    - name: Install required packages
+      ansible.builtin.apt:
+        name: [nginx, python3, git]
+        state: present
+    - name: Start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+      when: not ansible_check_mode
+    - name: Create app directory
+      ansible.builtin.file:
+        path: /var/www/{{ app_name }}
+        state: directory
+        mode: '0755'
+        owner: www-data
+        group: www-data

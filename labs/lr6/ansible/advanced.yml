@@ -1,0 +1,33 @@
+---
+- name: Conditions and loops on all lab hosts
+  hosts: all
+  become: true
+  vars:
+    users:
+      - {name: deploy, groups: sudo}
+      - {name: app, groups: www-data}
+  tasks:
+    - name: Install on Debian
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+      when: ansible_facts['os_family'] == 'Debian'
+    - name: Install on RedHat
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      when: ansible_facts['os_family'] == 'RedHat'
+    - name: Create users
+      ansible.builtin.user:
+        name: '{{ item.name }}'
+        groups: '{{ item.groups }}'
+        append: true
+      loop: '{{ users }}'
+    - name: Copy files
+      ansible.builtin.copy:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        mode: '0644'
+      loop:
+        - {src: files/file1.txt, dest: /tmp/file1.txt}
+        - {src: files/file2.txt, dest: /tmp/file2.txt}

@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+candidate="$1"
+config=$(mktemp /tmp/lr6-nginx-check.XXXXXX)
+trap 'rm -f "$config"' EXIT
+printf 'events {}\nhttp { include /etc/nginx/mime.types; include %s; }\n' "$candidate" > "$config"
+/usr/sbin/nginx -t -c "$config"

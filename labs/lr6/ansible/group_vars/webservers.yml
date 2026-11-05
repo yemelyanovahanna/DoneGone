@@ -1,0 +1,5 @@
+---
+http_port: 80
+server_name: lr6.local
+document_root: /var/www/myapp
+page_title: DoneGone - Ansible Lab 6

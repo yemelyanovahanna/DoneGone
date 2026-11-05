@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "jest --runInBand",
-    "lint": "node --check src/server.js && node --check src/app.js && node --check src/routes/auth.js && node --check src/routes/projects.js && node --check src/routes/tasks.js"
+    "lint": "node --check src/metrics.js && node --check src/server.js && node --check src/app.js && node --check src/routes/auth.js && node --check src/routes/projects.js && node --check src/routes/tasks.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

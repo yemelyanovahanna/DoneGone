@@ -1,0 +1,30 @@
+name: donegone-stage5
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: donegone
+      POSTGRES_DB: donegone
+      POSTGRES_PASSWORD: ${STAGE5_DB_PASSWORD:?Set STAGE5_DB_PASSWORD}
+    volumes:
+      - stage5_postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U donegone -d donegone']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  backend:
+    image: ${STAGE5_BACKEND_IMAGE:?Set STAGE5_BACKEND_IMAGE}
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://donegone:${STAGE5_DB_PASSWORD}@db:5432/donegone
+      JWT_SECRET: ${STAGE5_JWT_SECRET:?Set STAGE5_JWT_SECRET}
+    depends_on:
+      db: {condition: service_healthy}
+  frontend:
+    image: ${STAGE5_FRONTEND_IMAGE:?Set STAGE5_FRONTEND_IMAGE}
+    ports: ['127.0.0.1:8086:80']
+    depends_on: [backend]
+volumes:
+  stage5_postgres_data:

@@ -1,0 +1,13 @@
+name: donegone-lr6-ansible
+services:
+  web1:
+    build: .
+    image: donegone-lr6-node:local
+    ports: ["127.0.0.1:22261:22", "127.0.0.1:18061:80"]
+    volumes: ["./:/lab:ro"]
+  web2:
+    image: donegone-lr6-node:local
+    ports: ["127.0.0.1:22262:22", "127.0.0.1:18062:80"]
+  db1:
+    image: donegone-lr6-node:local
+    ports: ["127.0.0.1:22263:22"]

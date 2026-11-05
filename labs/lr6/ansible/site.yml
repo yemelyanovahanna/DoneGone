@@ -1,0 +1,39 @@
+---
+- name: Configure nginx with Jinja2 template
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Install site validation helper
+      ansible.builtin.copy:
+        src: files/nginx-site-check
+        dest: /usr/local/bin/nginx-site-check
+        mode: '0755'
+    - name: Deploy page
+      ansible.builtin.template:
+        src: files/index.html.j2
+        dest: '{{ document_root }}/index.html'
+        mode: '0644'
+    - name: Deploy nginx config
+      ansible.builtin.template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/sites-available/{{ server_name }}
+        mode: '0644'
+        validate: /usr/local/bin/nginx-site-check %s
+      notify: Restart nginx
+    - name: Disable default site
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: Restart nginx
+    - name: Enable site
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/{{ server_name }}
+        dest: /etc/nginx/sites-enabled/{{ server_name }}
+        state: link
+        force: "{{ ansible_check_mode }}"
+      notify: Restart nginx
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

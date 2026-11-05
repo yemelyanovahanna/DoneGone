@@ -1,0 +1,1 @@
+Ansible Lab 6 - second copied file
